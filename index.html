@@ -240,6 +240,9 @@ const MAX_WINES = 20;   // 11 scores x 2 = 22, enough for 20 bottles
 
 /* Only phones that opened the host link (?anfitriao=...) can create tastings.
    This is the SHA-256 of that secret, so the secret itself is not in the page. */
+/* Bump APP_VERSION and write the same text in version.txt on every change, so phones pick up the new page. */
+const APP_VERSION = '2026-10-12.1';
+
 const HOST_HASH = '49214f3a6d9f8fdf74917bea9434172be1b120fa94d96739f5c2c57320a5e5dd';
 
 const PARAMS = new URLSearchParams(location.search);
@@ -250,7 +253,7 @@ const $toast = document.getElementById('toast');
 let fs = null;
 
 const S = {
-  view: 'home', joinCode: null, canCreate: false,
+  view: 'home', joinCode: null, canCreate: false, hostKey: null,
   code: null, guestId: null, hostPin: null, isHost: false,
   event: null, guests: [], wines: [], ratings: {}, guesses: {}, reveals: {}, guestsLoaded: false,
   sel: null, showGuess: false, showMore: false, shareEdit: null, pending: false, unsub: [],
@@ -264,11 +267,23 @@ const plural = (n, one, many) => n + ' ' + (n === 1 ? one : many);
 const fmt = v => v == null ? '–' : v.toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const listPt = a => a.length <= 1 ? (a[0] || '') : a.slice(0, -1).join(', ') + ' e ' + a[a.length - 1];
 const SKEY = 'blindWineTasting.v2';
-const HKEY = 'blindWineTasting.hostKey';
-function loadSession() { try { return JSON.parse(localStorage.getItem(SKEY)) || null; } catch (e) { return null; } }
-function saveSession() { if (DEMO) return; try { localStorage.setItem(SKEY, JSON.stringify({ code: S.code, guestId: S.guestId, hostPin: S.hostPin })); } catch (e) {} }
+const SESSION_DAYS = 2; // a saved tasting is only reopened for a couple of days
+function loadSession() {
+  try {
+    const s = JSON.parse(localStorage.getItem(SKEY));
+    return s && s.savedAt && Date.now() - s.savedAt < SESSION_DAYS * 864e5 ? s : null;
+  } catch (e) { return null; }
+}
+function saveSession() { if (DEMO) return; try { localStorage.setItem(SKEY, JSON.stringify({ code: S.code, guestId: S.guestId, hostPin: S.hostPin, savedAt: Date.now() })); } catch (e) {} }
 function clearSession() { if (DEMO) return; try { localStorage.removeItem(SKEY); } catch (e) {} }
-function setUrl(code) { if (DEMO) return; try { history.replaceState(null, '', code ? '?e=' + code : location.pathname); } catch (e) {} }
+// The address always says which tasting this phone is in; the host link keeps its key, so a reload stays a host link.
+function setUrl(code) {
+  if (DEMO) return;
+  const q = new URLSearchParams();
+  if (code) q.set('e', code);
+  if (S.hostKey) q.set('anfitriao', S.hostKey);
+  try { history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '')); } catch (e) {}
+}
 const evRef = () => fs.collection('events').doc(S.code);
 const wineRef = id => evRef().collection('wines').doc(id);
 const myRatingRef = () => evRef().collection('ratings').doc(S.guestId);
@@ -377,7 +392,7 @@ function subscribe() {
   const ev = evRef();
   const onErr = err => { console.error(err); toast('Problema de ligação. Verifique a internet e recarregue a página.'); };
   S.unsub.push(ev.onSnapshot(snap => {
-    if (!snap.exists) { stopEvent(); setUrl(null); S.view = DEMO ? 'demo' : 'home'; toast('Esta prova já não existe.'); render(true); return; }
+    if (!snap.exists) { stopEvent(); setUrl(null); S.view = 'home'; toast('Esta prova já não existe.'); render(true); return; }
     const prev = S.event;
     S.event = snap.data();
     S.isHost = !!(S.hostPin && S.event.hostPin === S.hostPin);
@@ -488,7 +503,6 @@ const A = {
   home() { S.view = 'home'; render(true); },
   goCreate() { S.view = 'create'; render(true); },
   goHostLogin() { S.view = 'hostLogin'; render(true); },
-  goDemo() { location.href = location.pathname + '?demo'; },
 
   goJoin() {
     const c = val('code').toUpperCase().replace(/[^A-Z]/g, '');
@@ -534,11 +548,6 @@ const A = {
     enterEvent(code, gid, pin);
   },
 
-  async demoStart() {
-    const name = val('name');
-    if (!name) return toast('Escreva o seu nome.');
-    await Demo.start(name);
-  },
 
   pill(d, el) {
     const on = !el.classList.contains('on');
@@ -681,13 +690,14 @@ const A = {
   },
 
   async leave() {
-    if (!await ask(DEMO ? 'Sair da demonstração?' : 'Sair desta prova?<br><br>Pode voltar a entrar com o mesmo código e o mesmo nome.', 'Sair')) return;
-    stopEvent(); setUrl(null); S.view = DEMO ? 'demo' : 'home'; render(true);
+    if (DEMO) { if (await ask('Recomeçar a demonstração do início?', 'Recomeçar')) location.reload(); return; }
+    if (!await ask('Sair desta prova?<br><br>Pode voltar a entrar com o mesmo código e o mesmo nome.', 'Sair')) return;
+    stopEvent(); setUrl(null); S.view = 'home'; render(true);
   },
 
   async newTasting() {
     if (!await ask('Criar uma prova nova? Vai sair deste ecrã.', 'Criar')) return;
-    stopEvent(); setUrl(null); S.view = DEMO ? 'demo' : 'create'; render(true);
+    stopEvent(); setUrl(null); S.view = 'create'; render(true);
   }
 };
 
@@ -719,22 +729,10 @@ function homeView() {
     <input id="code" data-keep maxlength="4" autocapitalize="characters" autocomplete="off" placeholder="ex.: KTRB" data-enter="goJoin">
     <button class="btn primary" data-act="goJoin">Entrar</button>
   </div>
-  ${S.canCreate ? '<button class="btn green" data-act="goCreate">Sou o anfitrião: criar prova</button>' : ''}
-  <button class="textbtn" data-act="goDemo">Experimentar a aplicação</button>
-  <button class="textbtn" data-act="goHostLogin">Sou o anfitrião e perdi o meu ecrã</button>`;
+  ${S.canCreate ? `<button class="btn green" data-act="goCreate">Criar uma prova</button>
+    <button class="textbtn" data-act="goHostLogin">Perdi o ecrã do anfitrião de uma prova</button>` : ''}`;
 }
 
-function demoView() {
-  return `
-  <div class="brand"><div class="glass" aria-hidden="true">🍷</div><h1>Experimentar</h1></div>
-  <div class="card">
-    <p>Vai fazer de anfitrião numa prova a fingir, com três convidados virtuais: a Ana, o Rui e a Teresa.</p>
-    <p class="small">Nada fica guardado e ninguém mais vê esta prova.</p>
-    <label for="name">O seu nome</label>
-    <input id="name" data-keep autocomplete="given-name" maxlength="40" data-enter="demoStart">
-    <button class="btn green" data-act="demoStart">Começar</button>
-  </div>`;
-}
 
 function joinView() {
   return `
@@ -847,11 +845,7 @@ function setupView(me) {
       <span class="small">${plural(S.wines.length, 'garrafa', 'garrafas')} até agora</span></div>`;
   }
   const url = location.origin + location.pathname + '?e=' + S.code;
-  const invite = DEMO
-    ? `<div class="card host"><h2>Os convidados</h2>
-        <p>Numa prova a sério, aqui aparece o código QR para os convidados entrarem com o telemóvel.</p>
-        <p class="small">Nesta demonstração, a Ana, o Rui e a Teresa já chegaram e registaram as garrafas deles.</p></div>`
-    : `<div class="card host center">
+  const invite = `<div class="card host center">
         <h2>Apontem a câmara para entrar</h2>
         <div id="qr" aria-label="Código QR para entrar"></div>
         <p class="small">Ou abram ${esc(url.replace(/^https?:\/\//, '').replace(/\?.*$/, ''))} com o código</p>
@@ -881,7 +875,6 @@ function prepView(me) {
   return `${topBar(me)}
   <div class="stage"><div class="bigicon" aria-hidden="true">🍾</div><h1>Preparar as ${n} garrafas</h1></div>
   <div class="card host">
-    ${DEMO ? '<p class="small">Na demonstração, imagine que as garrafas já estão numeradas.</p>' : ''}
     <ol class="steps">
       <li>Passe cada vinho para uma garrafa igual.</li>
       <li>Esconda de quem é (ex.: nome num papel debaixo da garrafa).</li>
@@ -991,6 +984,9 @@ function revealView(me) {
   ${S.isHost ? `<div class="card host">
       <button class="btn green" style="margin-top:0" data-act="showResults" ${left.length ? 'disabled' : ''}>Mostrar resultados a todos</button>
       <button class="textbtn" data-act="backToTasting">Voltar à prova</button></div>`
+    : DEMO ? `<div class="card host">
+        <button class="btn green" style="margin-top:0" data-act="showResults" ${left.length ? 'disabled' : ''}>Ver os resultados</button>
+        <p class="small">Numa prova a sério, é o anfitrião que mostra os resultados a todos.</p></div>`
     : '<div class="waiting">Os resultados aparecem quando o anfitrião terminar.</div>'}`;
 }
 
@@ -1063,21 +1059,22 @@ function resultsView(me) {
   ${guessers.length ? `<div class="card"><h2>Palpites certos</h2>
     ${guessers.map(x => `<div class="nrow"><span>${esc(x.g.name)}</span><b>${x.right} de ${x.tried}</b></div>`).join('')}</div>` : ''}
   ${S.isHost ? `<button class="textbtn" data-act="reopen">Corrigir a revelação</button>
-    <button class="textbtn" data-act="newTasting">${DEMO ? 'Recomeçar a demonstração' : 'Criar uma prova nova'}</button>` : ''}`;
+    <button class="textbtn" data-act="newTasting">Criar uma prova nova</button>`
+    : DEMO ? '<button class="btn outline" data-act="leave">Experimentar outra vez</button>' : ''}`;
 }
 
 function view() {
-  const ribbon = DEMO ? '<div class="ribbon">Demonstração · nada fica guardado</div>' : '';
+  const ribbon = DEMO ? '<div class="ribbon">Demonstração: está numa prova a decorrer.<br>Experimente dar nota aos vinhos. Nada fica guardado.</div>' : '';
   return ribbon + screen();
 }
 
 function screen() {
   if (!fs) return '<p class="center lead" style="margin-top:40vh">Sem ligação. Verifique a internet e recarregue a página.</p>';
   if (!S.code) {
-    if (DEMO) return demoView();
+    if (DEMO) return '<p class="center lead" style="margin-top:30vh">A preparar a demonstração…</p>';
     if (S.view === 'join') return joinView();
     if (S.view === 'create' && S.canCreate) return createView();
-    if (S.view === 'hostLogin') return hostLoginView();
+    if (S.view === 'hostLogin' && S.canCreate) return hostLoginView();
     return homeView();
   }
   if (!S.event || !S.guestsLoaded) return '<p class="center lead" style="margin-top:40vh">A carregar a prova…</p>';
@@ -1224,106 +1221,126 @@ function memoryDb(onChange) {
   };
 }
 
+/* The demo drops the visitor straight into a tasting that is already running, as a guest, next to four
+   virtual people who have already voted. Everything lives in this phone's memory; nothing reaches Firebase. */
 const Demo = {
-  bots: [
-    { name: 'Ana', wine: { name: 'Douro Reserva', country: 'Portugal', region: 'Douro', year: '2019', abv: '14', grapes: 'Touriga Nacional, Touriga Franca' } },
-    { name: 'Rui', wine: { name: 'Alentejo Tinto', country: 'Portugal', region: 'Alentejo', year: '2021', abv: '14,5', grapes: 'Aragonez, Trincadeira, Alicante Bouschet' } },
-    { name: 'Teresa', wine: { name: 'Dão Colheita', country: 'Portugal', region: 'Dão', year: '2018', abv: '13,5', grapes: 'Touriga Nacional, Alfrocheiro' } }
+  me: 'Convidado', host: 'Manuel', people: ['Ana', 'Rui', 'Teresa'],
+  wines: [
+    { name: 'Douro Reserva', owners: ['Ana'], country: 'Portugal', region: 'Douro', year: '2019', abv: '14', grapes: 'Touriga Nacional, Touriga Franca' },
+    { name: 'Alentejo Tinto', owners: ['Rui'], country: 'Portugal', region: 'Alentejo', year: '2021', abv: '14,5', grapes: 'Aragonez, Trincadeira, Alicante Bouschet' },
+    { name: 'Dão Colheita', owners: ['Teresa'], country: 'Portugal', region: 'Dão', year: '2018', abv: '13,5', grapes: 'Touriga Nacional, Alfrocheiro' },
+    { name: 'Bairrada Baga', owners: ['Manuel'], country: 'Portugal', region: 'Bairrada', year: '2017', abv: '13', grapes: 'Baga' },
+    { name: 'Alvarinho', owners: ['Ana', 'Rui'], country: 'Portugal', region: 'Vinho Verde', year: '2023', abv: '12,5', grapes: 'Alvarinho' }
   ],
-  botIds: [], secret: null, voted: false, revealed: false,
+  ids: {}, bottles: {}, finished: false, revealed: false,
 
-  async start(name) {
+  async start() {
     fs = memoryDb(() => Demo.tick());
-    Object.assign(Demo, { botIds: [], secret: null, voted: false, revealed: false });
-    const r = await newEvent('DEMO', name);
+    Demo.finished = Demo.revealed = false;
     const ev = fs.collection('events').doc('DEMO');
-    for (let i = 0; i < Demo.bots.length; i++) {
-      const b = Demo.bots[i], g = ev.collection('guests').doc();
-      Demo.botIds.push(g.id);
-      await g.set({ name: b.name, joinedAt: Date.now() + i + 1 });
-      await ev.collection('wines').add(Object.assign({ guestId: g.id, guestIds: [g.id], number: null, createdAt: Date.now() + i + 1 }, b.wine));
+    const names = [Demo.host].concat(Demo.people, [Demo.me]), ids = Demo.ids = {};
+    names.forEach(n => { ids[n] = ev.collection('guests').doc().id; });
+    const total = Demo.wines.length;
+    let t = Date.now();
+    await ev.set({ createdAt: t, hostPin: '', hostGuest: ids[Demo.host], phase: 'tasting', current: 0, total, maxScore: MAX_SCORE, perScore: PER_SCORE });
+    for (const n of names) await ev.collection('guests').doc(ids[n]).set({ name: n, joinedAt: t++ });
+    // The bottles were shuffled and numbered by hand; only the virtual people know which is which.
+    const order = shuffle(Demo.wines.map((w, i) => i));
+    Demo.bottles = {};
+    for (let i = 0; i < total; i++) {
+      const w = Demo.wines[i], gids = w.owners.map(o => ids[o]), ref = ev.collection('wines').doc();
+      await ref.set({ name: w.name, country: w.country, region: w.region, year: w.year, abv: w.abv, grapes: w.grapes,
+        guestId: gids[0], guestIds: gids, number: null, createdAt: t++ });
+      Demo.bottles[order.indexOf(i) + 1] = Object.assign({ id: ref.id }, w);
     }
-    enterEvent('DEMO', r.gid, r.pin);
+    for (const n of [Demo.host].concat(Demo.people)) await ev.collection('ratings').doc(ids[n]).set(Demo.ballot(total));
+    enterEvent('DEMO', ids[Demo.me], null);
   },
 
-  // The virtual guests react to the phase: they score and guess once the tasting starts, and vote at the reveal.
-  async tick() {
-    if (!fs || !S.code) return;
-    const ev = fs.collection('events').doc('DEMO');
-    const s = await ev.get();
-    if (!s.exists) return;
-    const e = s.data();
-    if (e.phase === 'setup') { Demo.voted = false; Demo.revealed = false; Demo.secret = null; }
-    if (e.phase === 'tasting' && !Demo.voted) { Demo.voted = true; setTimeout(() => Demo.vote(e.total), 1500); }
-    if (e.phase === 'reveal' && !Demo.revealed) { Demo.revealed = true; setTimeout(() => Demo.reveal(e.total), 2000); }
-  },
-
-  async bottles(total) {
-    // The "real" numbering of the bottles, which only the virtual guests know.
-    if (!Demo.secret) {
-      const q = await fs.collection('events').doc('DEMO').collection('wines').get();
-      const wines = shuffle(q.docs.map(d => Object.assign({ id: d.id }, d.data()))).slice(0, total);
-      Demo.secret = {}; wines.forEach((w, i) => { Demo.secret[i + 1] = w; });
-    }
-    return Demo.secret;
-  },
-
-  async vote(total) {
-    const bottles = await Demo.bottles(total);
+  // Scores (each at most twice) and guesses, some right and some wrong.
+  ballot(total) {
+    const pool = shuffle([3, 4, 5, 6, 7, 8, 9, 10].flatMap(x => [x, x])).concat(shuffle([0, 1, 2, 0, 1, 2]));
     const pick = (real, list, p) => Math.random() < p ? real : list[Math.floor(Math.random() * list.length)];
-    for (const gid of Demo.botIds) {
-      const pool = shuffle([3, 4, 5, 6, 7, 8, 9, 10].flatMap(x => [x, x])).concat(shuffle([0, 1, 2, 0, 1, 2]));
-      const scores = {}, guesses = {};
-      for (let k = 1; k <= total; k++) {
-        scores[k] = pool[k - 1];
-        const w = bottles[k] || {};
-        guesses[k] = {
-          name: '', country: pick(w.country || 'Portugal', ['Portugal', 'Espanha', 'França'], 0.8),
-          region: pick(w.region || 'Douro', ['Douro', 'Alentejo', 'Dão', 'Bairrada', 'Lisboa'], 0.4),
-          year: String((parseInt(w.year, 10) || 2020) + (Math.random() < 0.4 ? 0 : 1)),
-          abv: w.abv || '13,5', grapes: pick(w.grapes || 'Touriga Nacional', ['Touriga Nacional', 'Baga', 'Castelão', 'Aragonez'], 0.5)
-        };
-      }
-      await fs.collection('events').doc('DEMO').collection('ratings').doc(gid).set({ scores, guesses }, { merge: true });
+    const scores = {}, guesses = {};
+    for (let k = 1; k <= total; k++) {
+      const w = Demo.bottles[k];
+      scores[k] = pool[k - 1];
+      guesses[k] = {
+        name: '', country: pick(w.country, ['Portugal', 'Espanha', 'França'], 0.8),
+        region: pick(w.region, ['Douro', 'Alentejo', 'Dão', 'Bairrada', 'Lisboa'], 0.4),
+        year: String(parseInt(w.year, 10) + (Math.random() < 0.4 ? 0 : 1)),
+        abv: pick(w.abv, ['12,5', '13', '14'], 0.5), grapes: pick(w.grapes, ['Touriga Nacional', 'Baga', 'Castelão', 'Aragonez'], 0.5)
+      };
     }
+    return { scores, guesses };
   },
 
-  async reveal(total) {
-    const bottles = await Demo.bottles(total);
-    for (let i = 0; i < Demo.botIds.length; i++) {
-      const map = {};
-      for (let k = 1; k <= total; k++) map[k] = bottles[k] ? bottles[k].id : '';
-      if (i === 2 && total >= 2) { const t = map[1]; map[1] = map[2]; map[2] = t; } // Teresa mixes up two bottles; the majority fixes it
-      await fs.collection('events').doc('DEMO').collection('ratings').doc(Demo.botIds[i]).set({ reveal: map }, { merge: true });
+  // Once the visitor has scored every wine, the virtual host ends the tasting; at the reveal the others vote.
+  tick() {
+    const e = S.event;
+    if (!e) return;
+    if (e.phase === 'tasting' && !Demo.finished) {
+      const mine = myScores();
+      for (let k = 1; k <= e.total; k++) if (mine[k] == null) return;
+      Demo.finished = true;
+      toast('Votou em todos os vinhos! O anfitrião vai terminar a prova.', 'ok');
+      setTimeout(() => fs.collection('events').doc('DEMO').update({ phase: 'reveal' }), 3500);
+    }
+    if (e.phase === 'reveal' && !Demo.revealed) {
+      Demo.revealed = true;
+      setTimeout(async () => {
+        const voters = [Demo.host].concat(Demo.people);
+        for (let i = 0; i < voters.length; i++) {
+          const map = {};
+          for (let k = 1; k <= e.total; k++) map[k] = Demo.bottles[k].id;
+          if (voters[i] === 'Teresa') { const x = map[1]; map[1] = map[2]; map[2] = x; } // one mix-up; the majority fixes it
+          await fs.collection('events').doc('DEMO').collection('ratings').doc(Demo.ids[voters[i]]).set({ reveal: map }, { merge: true });
+        }
+      }, 1500);
     }
   }
 };
 
 /* ---------- start ---------- */
+/* Phones and GitHub keep old copies of this page for a while. version.txt is always fetched fresh; if it names
+   a newer version than this page, reload once with ?v=<version>, an address no cache has seen yet. */
+async function isOutdated() {
+  try {
+    const r = await fetch('version.txt?t=' + Date.now(), { cache: 'no-store' });
+    if (!r.ok) return false;
+    const latest = (await r.text()).trim();
+    if (!latest || latest === APP_VERSION || PARAMS.get('v') === latest) return false;
+    PARAMS.set('v', latest);
+    location.replace(location.pathname + '?' + PARAMS.toString());
+    return true;
+  } catch (e) { return false; }
+}
+
 (async function init() {
-  if (DEMO) { fs = memoryDb(); S.view = 'demo'; render(true); return; }
+  if (await isOutdated()) return;
+  if (DEMO) { await Demo.start(); return; }
   if (!window.firebase) { render(true); return; }
   firebase.initializeApp(firebaseConfig);
   fs = firebase.firestore();
+  // Some routers, mobile networks and antivirus proxies hold back Firestore's streaming connection,
+  // so live updates never arrive. Long polling works everywhere and is plenty fast for a dinner table.
+  fs.settings({ experimentalForceLongPolling: true, experimentalAutoDetectLongPolling: false, merge: true });
 
-  // Host link: remember on this phone that it may create tastings, then hide the secret from the address bar.
+  // Only the host link (?anfitriao=<secret>) can create tastings. The plain link only joins one with a code.
   const key = PARAMS.get('anfitriao');
-  try {
-    if (key && await sha256(key) === HOST_HASH) { localStorage.setItem(HKEY, key); toast('Este telemóvel já pode criar provas.', 'ok'); }
-    const stored = localStorage.getItem(HKEY);
-    S.canCreate = !!stored && await sha256(stored) === HOST_HASH;
-  } catch (e) { S.canCreate = false; }
-  if (key) setUrl(null);
+  try { if (key && await sha256(key) === HOST_HASH) { S.hostKey = key; S.canCreate = true; } } catch (e) {}
 
+  // Reopen this phone's tasting only when the address names it (a reload, or the QR code again).
+  // The plain link always starts on the home screen.
   const urlCode = (PARAMS.get('e') || '').toUpperCase().replace(/[^A-Z]/g, '');
   const saved = loadSession();
-  if (saved && saved.code && saved.guestId && (!urlCode || urlCode === saved.code)) {
+  if (urlCode.length === 4 && saved && saved.code === urlCode && saved.guestId) {
     S.code = saved.code; S.guestId = saved.guestId; S.hostPin = saved.hostPin || null;
     setUrl(S.code); subscribe(); render(true);
   } else if (urlCode.length === 4) {
-    S.joinCode = urlCode; S.view = 'join'; render(true);
+    S.joinCode = urlCode; S.view = 'join'; setUrl(urlCode); render(true);
   } else {
-    render(true);
+    setUrl(null); render(true);
   }
 })();
 </script>
