@@ -44,6 +44,7 @@
 
   .card { background: var(--paper); border-radius: 20px; padding: 18px; margin: 14px 0; border: 1px solid var(--line); }
   .card.host { border: 3px solid var(--bottle); }
+  .ribbon { background: #fff6e0; border: 2px solid #c99a2e; color: #6b4e0e; border-radius: 12px; padding: 6px 12px; text-align: center; font-weight: 700; font-size: .85rem; margin-bottom: 10px; }
 
   label, .label { display: block; font-weight: 700; margin: 16px 0 6px; }
   input, select {
@@ -51,6 +52,7 @@
     border: 2px solid #cdb9be; border-radius: 12px; background: #fff;
   }
   input:focus, select:focus { outline: none; border-color: var(--claret); box-shadow: 0 0 0 4px var(--blush-strong); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
   button { font: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
   button:focus-visible { outline: 3px solid var(--claret); outline-offset: 3px; }
 
@@ -59,9 +61,6 @@
   .btn.green { background: var(--bottle); color: #fff; }
   .btn.outline { background: #fff; color: var(--claret); border-color: var(--claret); }
   .btn:disabled { opacity: .4; cursor: default; }
-  .row { display: flex; gap: 12px; }
-  .row > .btn { flex: 1; }
-  .row > .btn.narrow { flex: 0 0 34%; }
   .textbtn { display: block; margin: 12px auto 0; background: none; border: none; color: var(--claret); text-decoration: underline; font-size: .95rem; padding: 10px; min-height: 44px; }
   .smallbtn { background: #fff; border: 2px solid var(--line); border-radius: 10px; padding: 8px 12px; color: var(--muted); font-size: .85rem; min-height: 44px; flex: none; }
 
@@ -97,16 +96,18 @@
   #qr img, #qr canvas { max-width: 100%; height: auto; }
   .bigcode { display: block; text-align: center; font-size: 2.4rem; font-weight: 700; letter-spacing: .25em; color: var(--claret); margin: 4px 0; }
 
-  /* The bottle label: the one bold element */
-  .label-wrap { display: flex; justify-content: center; margin: 14px 0 10px; }
+  /* The bottle label with arrows: the one bold element */
+  .label-wrap { display: flex; justify-content: center; align-items: center; gap: 8px; margin: 14px 0 10px; }
+  .arrow { flex: none; width: 56px; height: 72px; border-radius: 14px; border: 2px solid var(--claret); background: #fff; color: var(--claret); font-size: 1.8rem; font-weight: 700; }
+  .arrow:disabled { opacity: .25; cursor: default; }
   .bottle-label {
-    width: min(260px, 76vw); padding: 14px 12px 12px; text-align: center; background: #fff;
+    width: min(220px, 52vw); padding: 14px 10px 12px; text-align: center; background: #fff;
     border: 3px solid var(--claret); border-radius: 50% / 38%;
     box-shadow: inset 0 0 0 6px #fff, inset 0 0 0 8px var(--claret);
   }
-  .bottle-label .cap { font-size: .95rem; color: var(--muted); }
+  .bottle-label .cap { font-size: .9rem; color: var(--muted); }
   .bottle-label .num { font-size: 4rem; font-weight: 700; line-height: 1; color: var(--claret-deep); }
-  .bottle-label .of { font-size: .95rem; color: var(--muted); }
+  .bottle-label .of { font-size: .9rem; color: var(--muted); }
 
   .prompt { text-align: center; font-size: 1.15rem; font-weight: 700; margin: 8px 0; }
   .saved { text-align: center; padding: 10px; border-radius: 12px; background: var(--bottle-soft); color: var(--bottle); font-weight: 700; margin: 8px 0; }
@@ -122,22 +123,17 @@
   .score:disabled { background: #efe9ea; color: #ad9fa3; border-style: dashed; cursor: default; }
   .score:disabled .left { color: #ad9fa3; }
 
-  .changing { background: #fff6e0; border: 2px solid #c99a2e; border-radius: 16px; padding: 14px; text-align: center; margin-top: 12px; }
-  .changing .btn { margin-top: 10px; }
-
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .chip { min-width: 66px; padding: 8px 10px; border-radius: 12px; border: 2px solid var(--line); background: #fff; display: flex; flex-direction: column; align-items: center; font-size: .8rem; color: var(--muted); }
+  .chip { min-width: 62px; padding: 8px 10px; border-radius: 12px; border: 2px solid var(--line); background: #fff; display: flex; flex-direction: column; align-items: center; font-size: .8rem; color: var(--muted); }
   .chip b { font-size: 1.3rem; color: var(--ink); }
-  .chip.missing { border-color: var(--alert); background: var(--alert-soft); }
-  .chip.missing b { color: var(--alert); }
+  .chip.todo { border-style: dashed; }
   .chip.active { border-color: var(--claret); box-shadow: 0 0 0 2px var(--claret); }
 
   .tag-num { flex: none; width: 52px; height: 52px; border-radius: 50%; border: 3px solid var(--claret); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.4rem; color: var(--claret-deep); background: #fff; }
-  .lbl { display: flex; align-items: center; gap: 14px; padding: 8px 0; font-size: 1.05rem; }
-  .unknown { color: var(--muted); font-size: 1.6rem; font-weight: 700; }
   .reveal-row { display: flex; align-items: flex-start; gap: 12px; padding: 8px 0; }
   .reveal-row .rv { flex: 1; min-width: 0; }
   .reveal-row .sub { margin: 4px 0 0 4px; }
+  .majority { color: var(--bottle); font-weight: 700; }
 
   .winner { text-align: center; background: var(--claret-deep); color: #fff; border-radius: 24px; padding: 24px 18px; margin: 14px 0; }
   .winner .medal { font-size: 3.2rem; line-height: 1; }
@@ -156,10 +152,13 @@
   .rk.medal { background: none; font-size: 2rem; }
   .rank .info { flex: 1; min-width: 0; }
   .rank .av { font-size: 1.4rem; font-weight: 700; color: var(--claret-deep); }
+  .rank .more { padding: 0 4px 14px 56px; }
   .mine-tag { display: inline-block; background: var(--bottle-soft); color: var(--bottle); font-size: .75rem; font-weight: 700; padding: 1px 8px; border-radius: 99px; margin-left: 4px; vertical-align: middle; }
-  .nrow { display: flex; justify-content: space-between; padding: 5px 4px 5px 56px; font-size: 1rem; }
+  .nrow { display: flex; justify-content: space-between; gap: 10px; padding: 4px 0; font-size: 1rem; }
   .nrow b { color: var(--claret-deep); }
-  .nrow:last-child { padding-bottom: 14px; }
+  .facts { background: var(--blush); border-radius: 10px; padding: 8px 10px; margin: 4px 0 8px; font-size: .9rem; }
+  .ok { color: var(--bottle); font-weight: 700; }
+  .bad { color: var(--alert); }
 
   #toast {
     position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 140%);
@@ -168,11 +167,48 @@
   }
   #toast.ok { background: var(--bottle); }
   #toast.show { transform: translate(-50%, 0); }
+  #toast:not(.show) { visibility: hidden; transition: transform .25s ease, visibility 0s .25s; }
+
+  /* In-app dialog (replaces the browser's "site says..." boxes) */
+  #modal { position: fixed; inset: 0; background: rgba(30, 10, 18, .55); display: flex; align-items: flex-end; justify-content: center; z-index: 20; padding: 16px; }
+  #modal[hidden] { display: none; }
+  #modal .sheet { background: #fff; border-radius: 22px; padding: 22px 18px 18px; width: min(520px, 100%); max-height: 85vh; overflow: auto; font-size: 1.1rem; }
+  #modal .sheet ul { padding-left: 1.2em; margin: .5em 0; }
+  #modal .btns { display: flex; gap: 12px; }
+  #modal .btns .btn { flex: 1; }
 </style>
 </head>
 <body>
 <div id="app"><p class="center lead" style="margin-top:40vh">A carregar…</p></div>
 <div id="toast" role="status" aria-live="polite"></div>
+<div id="modal" hidden><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mText">
+  <div id="mText"></div>
+  <div class="btns"><button class="btn outline" id="mNo">Cancelar</button><button class="btn primary" id="mYes">Sim</button></div>
+</div></div>
+
+<datalist id="dl-country">
+  <option>Portugal</option><option>Espanha</option><option>França</option><option>Itália</option><option>Alemanha</option>
+  <option>Áustria</option><option>Grécia</option><option>Argentina</option><option>Chile</option><option>Brasil</option>
+  <option>Uruguai</option><option>Estados Unidos</option><option>África do Sul</option><option>Austrália</option><option>Nova Zelândia</option>
+</datalist>
+<datalist id="dl-region">
+  <option>Douro</option><option>Porto</option><option>Vinho Verde</option><option>Trás-os-Montes</option><option>Dão</option>
+  <option>Bairrada</option><option>Beira Interior</option><option>Távora-Varosa</option><option>Lisboa</option><option>Tejo</option>
+  <option>Península de Setúbal</option><option>Alentejo</option><option>Algarve</option><option>Madeira</option><option>Açores</option>
+  <option>Colares</option><option>Bucelas</option><option>Rioja</option><option>Ribera del Duero</option><option>Rías Baixas</option>
+  <option>Priorat</option><option>Bordéus</option><option>Borgonha</option><option>Champagne</option><option>Ródano</option>
+  <option>Loire</option><option>Toscana</option><option>Piemonte</option><option>Mendoza</option>
+</datalist>
+<datalist id="dl-grape">
+  <option>Touriga Nacional</option><option>Touriga Franca</option><option>Tinta Roriz</option><option>Aragonez</option><option>Tinta Barroca</option>
+  <option>Tinto Cão</option><option>Sousão</option><option>Baga</option><option>Castelão</option><option>Trincadeira</option>
+  <option>Alicante Bouschet</option><option>Jaen</option><option>Alfrocheiro</option><option>Tinta Miúda</option><option>Syrah</option>
+  <option>Cabernet Sauvignon</option><option>Merlot</option><option>Pinot Noir</option><option>Tempranillo</option><option>Alvarinho</option>
+  <option>Loureiro</option><option>Avesso</option><option>Arinto</option><option>Encruzado</option><option>Antão Vaz</option>
+  <option>Fernão Pires</option><option>Bical</option><option>Maria Gomes</option><option>Verdelho</option><option>Gouveio</option>
+  <option>Viosinho</option><option>Rabigato</option><option>Malvasia Fina</option><option>Moscatel</option><option>Chardonnay</option>
+  <option>Sauvignon Blanc</option><option>Sercial</option>
+</datalist>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -191,23 +227,33 @@ const firebaseConfig = {
 /* Phases of a tasting:
    setup   -> everyone joins and registers the bottles they brought (a bottle can belong to several people)
    prep    -> list is closed; wines go into identical bottles, which are shuffled and numbered by hand
-   tasting -> everyone scores bottle 1, 2, 3...
-   reveal  -> the host says which wine was in each numbered bottle
-   done    -> everyone sees the results */
+   tasting -> everyone scores any bottle, in any order, and may guess its details; ends when everyone scored everything
+   reveal  -> everyone says which wine was in each numbered bottle; the majority decides
+   done    -> everyone sees the results
+
+   Data: events/{code} with subcollections guests, wines and ratings.
+   ratings/{guestId} = { scores: {n: 0-10}, guesses: {n: {...}}, reveal: {n: wineId} } */
 
 const MAX_SCORE = 10;   // scores go from 0 to 10
 const PER_SCORE = 2;    // each score can be given at most twice
 const MAX_WINES = 20;   // 11 scores x 2 = 22, enough for 20 bottles
+
+/* Only phones that opened the host link (?anfitriao=...) can create tastings.
+   This is the SHA-256 of that secret, so the secret itself is not in the page. */
+const HOST_HASH = '49214f3a6d9f8fdf74917bea9434172be1b120fa94d96739f5c2c57320a5e5dd';
+
+const PARAMS = new URLSearchParams(location.search);
+const DEMO = PARAMS.has('demo');
 
 const $app = document.getElementById('app');
 const $toast = document.getElementById('toast');
 let fs = null;
 
 const S = {
-  view: 'home', joinCode: null,
+  view: 'home', joinCode: null, canCreate: false,
   code: null, guestId: null, hostPin: null, isHost: false,
-  event: null, guests: [], wines: [], ratings: {}, guestsLoaded: false,
-  editing: null, shareEdit: null, pending: false, unsub: [],
+  event: null, guests: [], wines: [], ratings: {}, guesses: {}, reveals: {}, guestsLoaded: false,
+  sel: null, showGuess: false, showMore: false, shareEdit: null, pending: false, unsub: [],
   lastKey: null, clearDraft: false
 };
 
@@ -218,18 +264,23 @@ const plural = (n, one, many) => n + ' ' + (n === 1 ? one : many);
 const fmt = v => v == null ? '–' : v.toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const listPt = a => a.length <= 1 ? (a[0] || '') : a.slice(0, -1).join(', ') + ' e ' + a[a.length - 1];
 const SKEY = 'blindWineTasting.v2';
+const HKEY = 'blindWineTasting.hostKey';
 function loadSession() { try { return JSON.parse(localStorage.getItem(SKEY)) || null; } catch (e) { return null; } }
-function saveSession() { try { localStorage.setItem(SKEY, JSON.stringify({ code: S.code, guestId: S.guestId, hostPin: S.hostPin })); } catch (e) {} }
-function clearSession() { try { localStorage.removeItem(SKEY); } catch (e) {} }
-function setUrl(code) { try { history.replaceState(null, '', code ? '?e=' + code : location.pathname); } catch (e) {} }
+function saveSession() { if (DEMO) return; try { localStorage.setItem(SKEY, JSON.stringify({ code: S.code, guestId: S.guestId, hostPin: S.hostPin })); } catch (e) {} }
+function clearSession() { if (DEMO) return; try { localStorage.removeItem(SKEY); } catch (e) {} }
+function setUrl(code) { if (DEMO) return; try { history.replaceState(null, '', code ? '?e=' + code : location.pathname); } catch (e) {} }
 const evRef = () => fs.collection('events').doc(S.code);
 const wineRef = id => evRef().collection('wines').doc(id);
+const myRatingRef = () => evRef().collection('ratings').doc(S.guestId);
 const guestName = id => { const g = S.guests.find(x => x.id === id); return g ? g.name : 'alguém que saiu'; };
+const activeGuests = () => S.guests.filter(g => !g.left);
 const myScores = () => S.ratings[S.guestId] || {};
 const owners = w => Array.isArray(w.guestIds) && w.guestIds.length ? w.guestIds : (w.guestId ? [w.guestId] : []);
 const owns = (w, id) => owners(w).indexOf(id) >= 0;
 const broughtBy = w => listPt(owners(w).map(guestName));
 const buzz = p => { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) {} };
+const maxScore = () => (S.event && S.event.maxScore) || MAX_SCORE;
+const perScore = () => (S.event && S.event.perScore) || PER_SCORE;
 
 let toastTimer = null;
 function toast(text, kind) {
@@ -239,10 +290,62 @@ function toast(text, kind) {
   toastTimer = setTimeout(() => { $toast.className = kind === 'ok' ? 'ok' : ''; }, 4000);
 }
 
+/* In-app dialog. ask() resolves true/false; tell() only has an OK button. */
+const $modal = document.getElementById('modal');
+function ask(html, yes, no) {
+  return new Promise(resolve => {
+    document.getElementById('mText').innerHTML = html;
+    const bYes = document.getElementById('mYes'), bNo = document.getElementById('mNo');
+    bYes.textContent = yes || 'Sim';
+    bNo.textContent = no || 'Cancelar';
+    bNo.style.display = no === null ? 'none' : '';
+    const done = v => { $modal.hidden = true; bYes.onclick = bNo.onclick = null; resolve(v); };
+    bYes.onclick = () => done(true);
+    bNo.onclick = () => done(false);
+    $modal.hidden = false;
+    bYes.focus();
+  });
+}
+const tell = html => ask(html, 'OK', null);
+
 function randCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ'; // no I or O, easy to read
   let c = ''; for (let i = 0; i < 4; i++) c += chars[Math.floor(Math.random() * chars.length)];
   return c;
+}
+function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+async function sha256(s) {
+  const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(b)).map(x => x.toString(16).padStart(2, '0')).join('');
+}
+
+/* ---------- wine details and guesses ---------- */
+const FIELDS = [
+  { k: 'name', label: 'Nome' },
+  { k: 'country', label: 'País', list: 'dl-country' },
+  { k: 'region', label: 'Região', list: 'dl-region' },
+  { k: 'year', label: 'Ano', mode: 'numeric', half: true },
+  { k: 'abv', label: 'Teor alcoólico (%)', mode: 'decimal', half: true },
+  { k: 'grapes', label: 'Castas', list: 'dl-grape', hint: 'ex.: Touriga Nacional, Tinta Roriz' }
+];
+const DETAIL_FIELDS = FIELDS.filter(f => f.k !== 'name');
+const norm = s => String(s == null ? '' : s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9.,]+/g, ' ').trim();
+const textHit = (g, r) => { g = norm(g); r = norm(r); return !!g && !!r && (g === r || (g.length >= 3 && r.indexOf(g) >= 0) || (r.length >= 3 && g.indexOf(r) >= 0)); };
+const splitGrapes = s => String(s || '').split(/[,;/+]|\se\s/i).map(x => x.trim()).filter(Boolean);
+const toNum = s => { const v = parseFloat(String(s == null ? '' : s).replace(',', '.')); return isNaN(v) ? null : v; };
+const factsLine = w => [w.country, w.region, w.year, w.abv ? String(w.abv).replace('.', ',') + '%' : '', w.grapes].filter(Boolean).join(' · ');
+
+// null when there is nothing to compare; otherwise { ok, note }
+function judge(k, guess, wine) {
+  const real = wine[k];
+  if (guess == null || !String(guess).trim() || real == null || !String(real).trim()) return null;
+  if (k === 'year') return { ok: parseInt(guess, 10) === parseInt(real, 10) };
+  if (k === 'abv') { const a = toNum(guess), b = toNum(real); return { ok: a != null && b != null && Math.abs(a - b) <= 0.5 }; }
+  if (k === 'grapes') {
+    const realList = splitGrapes(real), hits = splitGrapes(guess).filter(g => realList.some(r => textHit(g, r))).length;
+    return { ok: hits > 0, note: hits + ' de ' + realList.length };
+  }
+  return { ok: textHit(guess, real) };
 }
 
 /* Keep the screen on while the tasting is running, so nobody has to unlock the phone every time. */
@@ -265,7 +368,7 @@ document.addEventListener('visibilitychange', syncWakeLock);
 /* ---------- live data ---------- */
 function stopEvent() {
   S.unsub.forEach(u => { try { u(); } catch (e) {} });
-  Object.assign(S, { unsub: [], code: null, guestId: null, hostPin: null, isHost: false, event: null, guests: [], wines: [], ratings: {}, guestsLoaded: false, editing: null, shareEdit: null });
+  Object.assign(S, { unsub: [], code: null, guestId: null, hostPin: null, isHost: false, event: null, guests: [], wines: [], ratings: {}, guesses: {}, reveals: {}, guestsLoaded: false, sel: null, showGuess: false, showMore: false, shareEdit: null });
   clearSession();
   syncWakeLock();
 }
@@ -274,18 +377,17 @@ function subscribe() {
   const ev = evRef();
   const onErr = err => { console.error(err); toast('Problema de ligação. Verifique a internet e recarregue a página.'); };
   S.unsub.push(ev.onSnapshot(snap => {
-    if (!snap.exists) { stopEvent(); setUrl(null); S.view = 'home'; toast('Esta prova já não existe.'); render(true); return; }
+    if (!snap.exists) { stopEvent(); setUrl(null); S.view = DEMO ? 'demo' : 'home'; toast('Esta prova já não existe.'); render(true); return; }
     const prev = S.event;
     S.event = snap.data();
     S.isHost = !!(S.hostPin && S.event.hostPin === S.hostPin);
-    const moved = prev && (prev.phase !== S.event.phase || prev.current !== S.event.current);
+    const moved = prev && prev.phase !== S.event.phase;
     if (moved) {
-      S.editing = null; S.shareEdit = null;
+      S.shareEdit = null; S.showGuess = false; S.sel = null;
       const ph = S.event.phase;
-      if (ph === 'tasting' && prev.phase === 'tasting') { if (!S.isHost) toast('Agora: vinho ' + S.event.current, 'ok'); buzz([80, 80, 80]); }
-      else if (ph === 'tasting' && prev.phase === 'prep') { toast('A prova começou!', 'ok'); buzz([80, 80, 80]); }
-      else if (ph === 'reveal') { buzz([80, 80, 80]); }
-      else if (ph === 'done') { buzz([150, 80, 150]); }
+      if (ph === 'tasting' && prev.phase === 'prep') { toast('A prova começou!', 'ok'); buzz([80, 80, 80]); }
+      else if (ph === 'reveal') buzz([80, 80, 80]);
+      else if (ph === 'done') buzz([150, 80, 150]);
     }
     render();
     if (moved) window.scrollTo(0, 0);
@@ -304,8 +406,9 @@ function subscribe() {
     render();
   }, onErr));
   S.unsub.push(ev.collection('ratings').onSnapshot(q => {
-    const r = {}; q.docs.forEach(d => { r[d.id] = (d.data().scores) || {}; });
-    S.ratings = r; render();
+    const r = {}, g = {}, v = {};
+    q.docs.forEach(d => { const x = d.data(); r[d.id] = x.scores || {}; g[d.id] = x.guesses || {}; v[d.id] = x.reveal || {}; });
+    S.ratings = r; S.guesses = g; S.reveals = v; render();
   }, onErr));
 }
 
@@ -313,7 +416,10 @@ async function findOrCreateGuest(code, name) {
   const gc = fs.collection('events').doc(code).collection('guests');
   const snap = await gc.get();
   const same = snap.docs.find(d => (d.data().name || '').trim().toLowerCase() === name.toLowerCase());
-  if (same) return same.id; // same name = same person coming back
+  if (same) { // same name = same person coming back
+    if (same.data().left) await gc.doc(same.id).update({ left: false });
+    return same.id;
+  }
   const ref = await gc.add({ name, joinedAt: Date.now() });
   return ref.id;
 }
@@ -323,19 +429,58 @@ function enterEvent(code, guestId, pin) {
   saveSession(); setUrl(code); subscribe(); render(true);
 }
 
-async function assignBottle(n, wineId) {
-  const b = fs.batch();
-  S.wines.forEach(w => {
-    if (w.id === wineId && w.number !== n) b.update(wineRef(w.id), { number: n });
-    else if (w.id !== wineId && w.number === n) b.update(wineRef(w.id), { number: null });
-  });
-  await b.commit();
+async function newEvent(code, name) {
+  const ev = fs.collection('events').doc(code);
+  const g = ev.collection('guests').doc();
+  const pin = String(Math.floor(1000 + Math.random() * 9000));
+  await ev.set({ createdAt: Date.now(), hostPin: pin, hostGuest: g.id, phase: 'setup', current: 0, total: 0, maxScore: MAX_SCORE, perScore: PER_SCORE });
+  await g.set({ name, joinedAt: Date.now() });
+  return { gid: g.id, pin };
 }
 
-function bottlesLeftToReveal() {
-  const left = [];
-  for (let k = 1; k <= S.event.total; k++) if (!S.wines.some(w => w.number === k)) left.push(k);
-  return S.wines.every(w => w.number) ? [] : left;
+/* Who has not scored what yet (only people still at the table). */
+function missingVotes() {
+  const total = S.event.total, out = [];
+  activeGuests().forEach(g => {
+    const sc = S.ratings[g.id] || {}, miss = [];
+    for (let k = 1; k <= total; k++) if (sc[k] == null) miss.push(k);
+    if (miss.length) out.push({ g, miss });
+  });
+  return out;
+}
+
+/* Reveal by majority: count every person's "bottle k is wine X" votes and give each bottle the most-voted
+   wine that is still free. Ties go to the host's vote, then to the order the wines were registered. */
+function majority() {
+  const tally = {}, order = {};
+  S.wines.forEach((w, i) => { order[w.id] = i; });
+  Object.keys(S.reveals).forEach(gid => {
+    const map = S.reveals[gid] || {};
+    Object.keys(map).forEach(k => {
+      const wid = map[k];
+      if (!wid || order[wid] == null) return;
+      const key = k + '|' + wid;
+      const t = tally[key] || (tally[key] = { k: +k, wid, n: 0, host: 0 });
+      t.n++; if (S.event.hostGuest && gid === S.event.hostGuest) t.host = 1;
+    });
+  });
+  const byBottle = {}, used = {};
+  Object.values(tally).sort((a, b) => b.n - a.n || b.host - a.host || order[a.wid] - order[b.wid]).forEach(t => {
+    if (t.k > S.event.total || byBottle[t.k] || used[t.wid]) return;
+    byBottle[t.k] = t; used[t.wid] = true;
+  });
+  return byBottle;
+}
+function bottlesWithoutMajority() {
+  const m = majority(), left = [];
+  for (let k = 1; k <= S.event.total; k++) if (!m[k]) left.push(k);
+  return left;
+}
+
+function firstUnscored() {
+  const mine = myScores();
+  for (let k = 1; k <= S.event.total; k++) if (mine[k] == null) return k;
+  return 1;
 }
 
 /* ---------- actions (buttons) ---------- */
@@ -343,6 +488,7 @@ const A = {
   home() { S.view = 'home'; render(true); },
   goCreate() { S.view = 'create'; render(true); },
   goHostLogin() { S.view = 'hostLogin'; render(true); },
+  goDemo() { location.href = location.pathname + '?demo'; },
 
   goJoin() {
     const c = val('code').toUpperCase().replace(/[^A-Z]/g, '');
@@ -363,6 +509,7 @@ const A = {
   },
 
   async create() {
+    if (!S.canCreate) return toast('Só o anfitrião pode criar provas.');
     const name = val('name');
     if (!name) return toast('Escreva o seu nome.');
     let code = null;
@@ -372,10 +519,8 @@ const A = {
       if (!s.exists) { code = c; break; }
     }
     if (!code) return toast('Não foi possível criar a prova. Tente novamente.');
-    const pin = String(Math.floor(1000 + Math.random() * 9000));
-    await fs.collection('events').doc(code).set({ createdAt: Date.now(), hostPin: pin, phase: 'setup', current: 0, total: 0, maxScore: MAX_SCORE, perScore: PER_SCORE });
-    const g = await fs.collection('events').doc(code).collection('guests').add({ name, joinedAt: Date.now() });
-    enterEvent(code, g.id, pin);
+    const r = await newEvent(code, name);
+    enterEvent(code, r.gid, r.pin);
   },
 
   async hostLogin() {
@@ -389,10 +534,17 @@ const A = {
     enterEvent(code, gid, pin);
   },
 
+  async demoStart() {
+    const name = val('name');
+    if (!name) return toast('Escreva o seu nome.');
+    await Demo.start(name);
+  },
+
   pill(d, el) {
     const on = !el.classList.contains('on');
     el.classList.toggle('on', on); el.setAttribute('aria-pressed', on);
   },
+  toggleMore() { S.showMore = !S.showMore; render(true); },
 
   async addWine() {
     if (S.wines.length >= MAX_WINES) return toast('Já há ' + MAX_WINES + ' garrafas, o máximo.');
@@ -401,14 +553,17 @@ const A = {
     const picked = Array.from(document.querySelectorAll('#newOwners .pill.on')).map(b => b.dataset.gid);
     const ids = S.isHost ? picked : [S.guestId].concat(picked.filter(g => g !== S.guestId));
     if (!ids.length) return toast('Toque no nome de quem trouxe esta garrafa.');
-    await evRef().collection('wines').add({ guestId: ids[0], guestIds: ids, name, number: null, createdAt: Date.now() });
-    S.clearDraft = true; render(true);
+    const wine = { guestId: ids[0], guestIds: ids, name, number: null, createdAt: Date.now() };
+    DETAIL_FIELDS.forEach(f => { wine[f.k] = val('w_' + f.k); });
+    wine.year = wine.year.replace(/\D/g, '').slice(0, 4);
+    await evRef().collection('wines').add(wine);
+    S.clearDraft = true; S.showMore = false; render(true);
     toast(ids.length === 1 && ids[0] === S.guestId ? 'Garrafa registada.' : 'Garrafa de ' + listPt(ids.map(guestName)) + ' registada.', 'ok');
   },
 
   async delWine(d) {
     const w = S.wines.find(x => x.id === d.id);
-    if (!w || !confirm('Remover a garrafa "' + w.name + '"?')) return;
+    if (!w || !await ask('Remover a garrafa <b>' + esc(w.name) + '</b>?', 'Remover')) return;
     if (S.shareEdit === d.id) S.shareEdit = null;
     await wineRef(d.id).delete();
   },
@@ -428,7 +583,7 @@ const A = {
   },
 
   async delGuest(d) {
-    if (!confirm('Remover ' + guestName(d.id) + ' da prova?\n\nAs garrafas que só esta pessoa trouxe também saem da lista.')) return;
+    if (!await ask('Remover <b>' + esc(guestName(d.id)) + '</b> da prova?<br><br>As garrafas que só esta pessoa trouxe também saem da lista.', 'Remover')) return;
     const b = fs.batch();
     b.delete(evRef().collection('guests').doc(d.id));
     b.delete(evRef().collection('ratings').doc(d.id));
@@ -440,10 +595,16 @@ const A = {
     await b.commit();
   },
 
+  // During the tasting someone who went home can be taken out of the "still missing" list.
+  async markLeft(d) {
+    if (!await ask('<b>' + esc(guestName(d.id)) + '</b> já saiu?<br><br>Deixa de ser preciso esperar pelas notas desta pessoa. As notas que já deu continuam a contar.', 'Sim, já saiu')) return;
+    await evRef().collection('guests').doc(d.id).update({ left: true });
+  },
+
   async closeList() {
     const n = S.wines.length;
     if (n < 2) return toast('São precisas pelo menos 2 garrafas.');
-    if (!confirm('Fechar a lista com ' + n + ' garrafas?\n\nDepois já não se podem registar garrafas.')) return;
+    if (!await ask('Fechar a lista com <b>' + n + ' garrafas</b>?<br><br>Depois já não se podem registar garrafas.', 'Fechar a lista')) return;
     const b = fs.batch();
     S.wines.forEach(w => b.update(wineRef(w.id), { number: null }));
     b.update(evRef(), { phase: 'prep', current: 0, total: n, maxScore: MAX_SCORE, perScore: PER_SCORE });
@@ -451,76 +612,103 @@ const A = {
   },
 
   async backToSetup() {
-    if (!confirm('Voltar à lista de garrafas, para acrescentar ou corrigir?')) return;
-    await evRef().update({ phase: 'setup', current: 0 });
+    if (!await ask('Voltar à lista de garrafas, para acrescentar ou corrigir?', 'Voltar')) return;
+    await evRef().update({ phase: 'setup' });
   },
 
   async beginTasting() {
-    if (!confirm('As ' + S.event.total + ' garrafas estão numeradas?\n\nTodos vão passar a ver o vinho 1.')) return;
-    await evRef().update({ phase: 'tasting', current: 1, startedAt: Date.now() });
+    if (!await ask('As <b>' + S.event.total + ' garrafas</b> estão numeradas?<br><br>Todos passam a poder votar.', 'Começar')) return;
+    await evRef().update({ phase: 'tasting', startedAt: Date.now() });
   },
 
+  go(d) {
+    const n = parseInt(d.n, 10);
+    if (n >= 1 && n <= S.event.total) { S.sel = n; render(true); }
+  },
+  toggleGuess() { S.showGuess = !S.showGuess; render(true); },
+
   async score(d) {
-    const e = S.event;
-    const n = S.editing || e.current;
+    const n = S.sel;
     const s = parseInt(d.s, 10);
     const mine = myScores();
     const usedElsewhere = Object.keys(mine).filter(k => +k !== n && mine[k] === s).length;
-    if (usedElsewhere >= e.perScore) return toast('Já deu ' + s + ' a ' + e.perScore + ' vinhos.');
+    if (usedElsewhere >= perScore()) return toast('Já deu ' + s + ' a ' + perScore() + ' vinhos.');
     buzz(25);
     S.ratings[S.guestId] = Object.assign({}, mine, { [n]: s });
     render(true);
     // Not awaited: Firestore keeps the score on the phone and sends it in the background,
     // so a slow connection never blocks the next tap.
-    evRef().collection('ratings').doc(S.guestId).set({ scores: { [n]: s } }, { merge: true })
+    myRatingRef().set({ scores: { [n]: s } }, { merge: true })
       .catch(err => { console.error(err); toast('A nota não foi guardada. Verifique a internet e toque outra vez.'); });
+    const me = S.guests.find(g => g.id === S.guestId);
+    if (me && me.left) evRef().collection('guests').doc(S.guestId).update({ left: false }).catch(() => {});
   },
 
-  edit(d) {
-    const n = parseInt(d.n, 10);
-    S.editing = n === S.event.current ? null : n;
-    render(true); window.scrollTo({ top: 0, behavior: 'smooth' });
-  },
-  backToCurrent() { S.editing = null; render(true); },
-
-  async next() {
-    const e = S.event;
-    if (e.current < e.total) return evRef().update({ current: e.current + 1 });
-    let missing = 0;
-    S.guests.forEach(g => { const sc = S.ratings[g.id] || {}; for (let k = 1; k <= e.total; k++) if (sc[k] == null) missing++; });
-    const head = missing ? 'Faltam ' + missing + ' notas. As que faltam não contam.\n\n' : '';
-    if (!confirm(head + 'Terminar a prova e revelar as garrafas?')) return;
+  async finish() {
+    const miss = missingVotes();
+    if (miss.length) {
+      return tell('<b>Ainda não votaram todos:</b><ul>' + miss.map(m =>
+        `<li>${esc(m.g.name)}: ${m.miss.length === 1 ? 'vinho ' : 'vinhos '}${listPt(m.miss.map(String))}</li>`).join('') +
+        '</ul>A prova só termina quando todos votarem em todos os vinhos.');
+    }
+    if (!await ask('Todos votaram em todos os vinhos.<br><br>Terminar a prova e passar à revelação?', 'Terminar')) return;
     await evRef().update({ phase: 'reveal' });
   },
-  async prev() { const e = S.event; if (e.current > 1) await evRef().update({ current: e.current - 1 }); },
 
   async showResults() {
-    const left = bottlesLeftToReveal();
-    if (left.length) return toast('Falta dizer que vinho estava na garrafa ' + listPt(left.map(String)) + '.');
-    if (!confirm('Mostrar os resultados a todos?')) return;
-    await evRef().update({ phase: 'done', finishedAt: Date.now() });
+    const left = bottlesWithoutMajority();
+    if (left.length) return tell('Ainda ninguém disse que vinho estava na garrafa ' + listPt(left.map(String)) + '.');
+    if (!await ask('Mostrar os resultados a todos?', 'Mostrar')) return;
+    const m = majority();
+    const b = fs.batch();
+    S.wines.forEach(w => {
+      let n = null;
+      Object.keys(m).forEach(k => { if (m[k].wid === w.id) n = +k; });
+      if (w.number !== n) b.update(wineRef(w.id), { number: n });
+    });
+    b.update(evRef(), { phase: 'done', finishedAt: Date.now() });
+    await b.commit();
   },
 
   async backToTasting() {
-    if (!confirm('Voltar à prova? Todos poderão mudar as notas outra vez.')) return;
+    if (!await ask('Voltar à prova? Todos poderão mudar as notas outra vez.', 'Voltar')) return;
     await evRef().update({ phase: 'tasting' });
   },
 
   async reopen() {
-    if (!confirm('Esconder os resultados e voltar à revelação das garrafas?')) return;
+    if (!await ask('Esconder os resultados e voltar à revelação das garrafas?', 'Voltar')) return;
     await evRef().update({ phase: 'reveal' });
   },
 
-  leave() {
-    if (!confirm('Sair desta prova?\n\nPode voltar a entrar com o mesmo código e o mesmo nome.')) return;
-    stopEvent(); setUrl(null); S.view = 'home'; render(true);
+  async leave() {
+    if (!await ask(DEMO ? 'Sair da demonstração?' : 'Sair desta prova?<br><br>Pode voltar a entrar com o mesmo código e o mesmo nome.', 'Sair')) return;
+    stopEvent(); setUrl(null); S.view = DEMO ? 'demo' : 'home'; render(true);
   },
 
-  newTasting() {
-    if (!confirm('Criar uma prova nova? Vai sair deste ecrã.')) return;
-    stopEvent(); setUrl(null); S.view = 'create'; render(true);
+  async newTasting() {
+    if (!await ask('Criar uma prova nova? Vai sair deste ecrã.', 'Criar')) return;
+    stopEvent(); setUrl(null); S.view = DEMO ? 'demo' : 'create'; render(true);
   }
 };
+
+async function saveGuess(n) {
+  const g = {};
+  FIELDS.forEach(f => { g[f.k] = val('g_' + f.k); });
+  const all = Object.assign({}, S.guesses[S.guestId] || {});
+  all[n] = g; S.guesses[S.guestId] = all;
+  await myRatingRef().set({ guesses: { [n]: g } }, { merge: true });
+}
+
+async function saveRevealVote(k, wineId) {
+  const total = S.event.total, mine = Object.assign({}, S.reveals[S.guestId] || {}), full = {};
+  for (let i = 1; i <= total; i++) {
+    let v = mine[i] || '';
+    if (wineId && v === wineId) v = '';   // a wine can only be in one bottle
+    full[i] = i === k ? (wineId || '') : v;
+  }
+  S.reveals[S.guestId] = full;
+  await myRatingRef().set({ reveal: full }, { merge: true });
+}
 
 /* ---------- screens ---------- */
 function homeView() {
@@ -531,8 +719,21 @@ function homeView() {
     <input id="code" data-keep maxlength="4" autocapitalize="characters" autocomplete="off" placeholder="ex.: KTRB" data-enter="goJoin">
     <button class="btn primary" data-act="goJoin">Entrar</button>
   </div>
-  <button class="btn green" data-act="goCreate">Sou o anfitrião: criar prova</button>
+  ${S.canCreate ? '<button class="btn green" data-act="goCreate">Sou o anfitrião: criar prova</button>' : ''}
+  <button class="textbtn" data-act="goDemo">Experimentar a aplicação</button>
   <button class="textbtn" data-act="goHostLogin">Sou o anfitrião e perdi o meu ecrã</button>`;
+}
+
+function demoView() {
+  return `
+  <div class="brand"><div class="glass" aria-hidden="true">🍷</div><h1>Experimentar</h1></div>
+  <div class="card">
+    <p>Vai fazer de anfitrião numa prova a fingir, com três convidados virtuais: a Ana, o Rui e a Teresa.</p>
+    <p class="small">Nada fica guardado e ninguém mais vê esta prova.</p>
+    <label for="name">O seu nome</label>
+    <input id="name" data-keep autocomplete="given-name" maxlength="40" data-enter="demoStart">
+    <button class="btn green" data-act="demoStart">Começar</button>
+  </div>`;
 }
 
 function joinView() {
@@ -578,6 +779,19 @@ function topBar(me) {
     <button class="smallbtn" data-act="leave">Sair</button></div>`;
 }
 
+// Inputs for country, region, year, abv, grapes (and the name, for guesses).
+function fieldInputs(fields, prefix, values, extra) {
+  const one = f => `<div><label for="${prefix + f.k}">${f.label}</label>
+    <input id="${prefix + f.k}" ${extra(f)} maxlength="80" value="${esc(values[f.k] || '')}"
+      ${f.list ? `list="${f.list}"` : ''} ${f.mode ? `inputmode="${f.mode}"` : ''} ${f.hint ? `placeholder="${esc(f.hint)}"` : ''} autocomplete="off"></div>`;
+  let html = '', i = 0;
+  while (i < fields.length) {
+    if (fields[i].half && fields[i + 1] && fields[i + 1].half) { html += `<div class="grid2">${one(fields[i])}${one(fields[i + 1])}</div>`; i += 2; }
+    else { html += one(fields[i]); i++; }
+  }
+  return html;
+}
+
 /* --- setup: registering bottles --- */
 function ownerPills(list, isOn, act, extra) {
   return `<div class="pills">${list.map(g => `<button class="pill${isOn(g.id) ? ' on' : ''}" aria-pressed="${isOn(g.id)}"
@@ -592,6 +806,7 @@ function winesCard() {
     const open = S.shareEdit === w.id;
     return `<div class="wine-item">
       <b>${esc(w.name)}</b>
+      ${factsLine(w) ? `<span class="sub">${esc(factsLine(w))}</span>` : ''}
       ${S.isHost || owners(w).length > 1 ? `<span class="sub">de ${esc(broughtBy(w))}</span>` : ''}
       <div class="acts">
         ${S.guests.length > 1 ? `<button class="smallbtn" data-act="editOwners" data-id="${esc(w.id)}">${open ? 'Fechar' : 'De quem é?'}</button>` : ''}
@@ -616,6 +831,9 @@ function winesCard() {
     ${full ? `<p class="small">Chegou ao máximo de ${MAX_WINES} garrafas.</p>` : `<div class="add-form">
       <label for="wName">Registar garrafa</label>
       <input id="wName" data-keep maxlength="80" placeholder="Nome do vinho" data-enter="addWine">
+      ${S.showMore
+        ? fieldInputs(DETAIL_FIELDS, 'w_', {}, () => 'data-keep')
+        : '<button class="textbtn" style="margin:4px 0 0" data-act="toggleMore">+ País, região, ano, castas (opcional)</button>'}
       ${ownersField}
       <button class="btn primary" data-act="addWine">Registar</button></div>`}
   </div>`;
@@ -629,14 +847,19 @@ function setupView(me) {
       <span class="small">${plural(S.wines.length, 'garrafa', 'garrafas')} até agora</span></div>`;
   }
   const url = location.origin + location.pathname + '?e=' + S.code;
+  const invite = DEMO
+    ? `<div class="card host"><h2>Os convidados</h2>
+        <p>Numa prova a sério, aqui aparece o código QR para os convidados entrarem com o telemóvel.</p>
+        <p class="small">Nesta demonstração, a Ana, o Rui e a Teresa já chegaram e registaram as garrafas deles.</p></div>`
+    : `<div class="card host center">
+        <h2>Apontem a câmara para entrar</h2>
+        <div id="qr" aria-label="Código QR para entrar"></div>
+        <p class="small">Ou abram ${esc(url.replace(/^https?:\/\//, '').replace(/\?.*$/, ''))} com o código</p>
+        <span class="bigcode">${esc(S.code)}</span>
+        <p class="small">O seu PIN de anfitrião: <b>${esc(S.event.hostPin)}</b></p>
+      </div>`;
   return `${topBar(me)}
-  <div class="card host center">
-    <h2>Apontem a câmara para entrar</h2>
-    <div id="qr" aria-label="Código QR para entrar"></div>
-    <p class="small">Ou abram ${esc(url.replace(/^https?:\/\//, '').replace(/\?.*$/, ''))} com o código</p>
-    <span class="bigcode">${esc(S.code)}</span>
-    <p class="small">O seu PIN de anfitrião: <b>${esc(S.event.hostPin)}</b></p>
-  </div>
+  ${invite}
   <div class="card">
     <h2>Pessoas (${S.guests.length})</h2>
     ${S.guests.map(g => `<div class="list-row"><span><b>${esc(g.name)}</b>${g.id === S.guestId ? ' (você)' : ''}</span>
@@ -653,11 +876,12 @@ function prepView(me) {
     return `${topBar(me)}
     <div class="stage"><div class="bigicon" aria-hidden="true">🍾</div><h1>A preparar as garrafas</h1></div>
     <div class="waiting">A prova começa daqui a pouco.<br>
-      <span class="small">Notas de 0 a ${MAX_SCORE}. Cada nota só pode ser dada ${PER_SCORE} vezes.</span></div>`;
+      <span class="small">Notas de 0 a ${maxScore()}. Cada nota só pode ser dada ${perScore()} vezes.</span></div>`;
   }
   return `${topBar(me)}
   <div class="stage"><div class="bigicon" aria-hidden="true">🍾</div><h1>Preparar as ${n} garrafas</h1></div>
   <div class="card host">
+    ${DEMO ? '<p class="small">Na demonstração, imagine que as garrafas já estão numeradas.</p>' : ''}
     <ol class="steps">
       <li>Passe cada vinho para uma garrafa igual.</li>
       <li>Esconda de quem é (ex.: nome num papel debaixo da garrafa).</li>
@@ -668,30 +892,45 @@ function prepView(me) {
   </div>`;
 }
 
-/* --- tasting --- */
+/* --- tasting: free voting, any wine, any order --- */
 function hostTastingPanel() {
-  const e = S.event, cur = e.current;
-  const waiting = S.guests.filter(g => (S.ratings[g.id] || {})[cur] == null);
-  const last = cur >= e.total;
+  const miss = missingVotes();
   return `<div class="card host">
-    <p><b>${waiting.length ? 'Falta: ' + waiting.map(g => esc(g.name)).join(', ') : 'Todos já deram nota ao vinho ' + cur + '.'}</b></p>
-    <div class="row">
-      <button class="btn outline narrow" data-act="prev" ${cur <= 1 ? 'disabled' : ''}>Anterior</button>
-      <button class="btn green" data-act="next">${last ? 'Terminar' : 'Vinho ' + (cur + 1)}</button>
-    </div>
+    <h2>${miss.length ? 'Ainda falta votar' : 'Todos votaram em tudo ✓'}</h2>
+    ${miss.map(m => `<div class="list-row"><span><b>${esc(m.g.name)}</b>
+      <span class="sub">${m.miss.length === 1 ? 'vinho ' : 'vinhos '}${listPt(m.miss.map(String))}</span></span>
+      ${m.g.id !== S.guestId ? `<button class="smallbtn" data-act="markLeft" data-id="${esc(m.g.id)}">Já saiu</button>` : ''}</div>`).join('')}
+    <button class="btn green" data-act="finish">Terminar a prova</button>
+  </div>`;
+}
+
+function guessCard(n) {
+  const g = (S.guesses[S.guestId] || {})[n] || {};
+  const filled = FIELDS.some(f => g[f.k]);
+  if (!S.showGuess) {
+    return `<button class="btn outline" data-act="toggleGuess">${filled ? 'Ver o meu palpite ✓' : 'Adivinhar este vinho (opcional)'}</button>`;
+  }
+  return `<div class="card">
+    <h2>O meu palpite: vinho ${n}</h2>
+    <p class="small">Só por curiosidade, não conta para a classificação. Guarda-se sozinho.</p>
+    <div data-guess-for="${n}">${fieldInputs(FIELDS, 'g_', g, () => 'data-guess')}</div>
+    <button class="btn outline" data-act="toggleGuess">Fechar o palpite</button>
   </div>`;
 }
 
 function tastingView(me) {
-  const e = S.event, cur = e.current;
-  const n = S.editing || cur;
+  const e = S.event, total = e.total;
+  if (!S.sel || S.sel > total) S.sel = firstUnscored();
+  const n = S.sel;
   const mine = myScores();
   const my = mine[n];
+  const per = perScore();
   const usedElsewhere = s => Object.keys(mine).filter(k => +k !== n && mine[k] === s).length;
+  const done = Object.keys(mine).filter(k => k <= total && mine[k] != null).length;
 
   let grid = '';
-  for (let s = 0; s <= e.maxScore; s++) {
-    const left = e.perScore - usedElsewhere(s);
+  for (let s = 0; s <= maxScore(); s++) {
+    const left = per - usedElsewhere(s);
     const sel = my === s, out = left <= 0 && !sel;
     const note = sel ? '✓' : out ? 'esgotado' : (left === 1 ? 'resta 1' : 'restam ' + left);
     grid += `<button class="score${sel ? ' sel' : ''}" data-act="score" data-s="${s}" ${out ? 'disabled' : ''} aria-pressed="${sel}">
@@ -699,63 +938,60 @@ function tastingView(me) {
   }
 
   let chips = '';
-  for (let k = 1; k <= cur; k++) {
+  for (let k = 1; k <= total; k++) {
     const v = mine[k];
-    chips += `<button class="chip${v == null && k < cur ? ' missing' : ''}${k === n ? ' active' : ''}" data-act="edit" data-n="${k}">
+    chips += `<button class="chip${v == null ? ' todo' : ''}${k === n ? ' active' : ''}" data-act="go" data-n="${k}">
       Vinho ${k}<b>${v == null ? '–' : v}</b></button>`;
   }
 
   return `${topBar(me)}
-  ${S.editing ? `<div class="changing"><b>A mudar a nota do vinho ${n}</b>
-    <button class="btn outline" data-act="backToCurrent">Voltar ao vinho ${cur}</button></div>` : ''}
-  <div class="label-wrap"><div class="bottle-label">
-    <div class="cap">${S.editing ? 'A mudar' : 'A provar'}</div>
-    <div class="num">${n}</div><div class="of">de ${e.total}</div></div></div>
+  <div class="label-wrap">
+    <button class="arrow" data-act="go" data-n="${n - 1}" ${n <= 1 ? 'disabled' : ''} aria-label="Vinho anterior">‹</button>
+    <div class="bottle-label"><div class="cap">Vinho</div><div class="num">${n}</div><div class="of">de ${total}</div></div>
+    <button class="arrow" data-act="go" data-n="${n + 1}" ${n >= total ? 'disabled' : ''} aria-label="Vinho seguinte">›</button>
+  </div>
   ${my == null ? '<p class="prompt">Toque na sua nota</p>' : `<div class="saved">Deu ${my} ao vinho ${n}</div>`}
   <div class="scores">${grid}</div>
-  ${cur > 1 ? `<div class="card">
-    <h2>As suas notas</h2>
-    <p class="small">Toque num vinho para mudar a nota.</p>
+  ${guessCard(n)}
+  <div class="card">
+    <h2>As suas notas (${done} de ${total})</h2>
+    <p class="small">Pode votar por qualquer ordem e mudar até o anfitrião terminar.</p>
     <div class="chips">${chips}</div>
-  </div>` : ''}
+  </div>
   ${S.isHost ? hostTastingPanel() : ''}`;
 }
 
-/* --- reveal: which wine was in each bottle --- */
+/* --- reveal: everyone says which wine was in each bottle; the majority decides --- */
 function revealView(me) {
   const total = S.event.total;
-  const inBottle = k => S.wines.find(w => w.number === k);
-  const head = `${topBar(me)}
-  <div class="stage"><div class="bigicon" aria-hidden="true">🎁</div><h1>A revelação</h1>
-    <p class="lead">${S.isHost ? 'Destape cada garrafa e escolha o vinho.' : 'O anfitrião está a destapar as garrafas.'}</p></div>`;
-
-  if (S.isHost) {
-    const sameName = w => S.wines.some(o => o.id !== w.id && o.name.trim().toLowerCase() === w.name.trim().toLowerCase());
-    let rows = '';
-    for (let k = 1; k <= total; k++) {
-      const w = inBottle(k);
-      const opts = S.wines.map(o => `<option value="${esc(o.id)}"${o.number === k ? ' selected' : ''}>${esc(o.name)}${sameName(o) ? ' (' + esc(broughtBy(o)) + ')' : ''}${o.number && o.number !== k ? ' · está na ' + o.number : ''}</option>`).join('');
-      rows += `<div class="reveal-row"><span class="tag-num">${k}</span><div class="rv">
-        <select data-reveal="${k}" aria-label="Vinho na garrafa ${k}"><option value="">Escolher…</option>${opts}</select>
-        ${w ? `<span class="sub">de ${esc(broughtBy(w))}</span>` : ''}</div></div>`;
-    }
-    const left = bottlesLeftToReveal();
-    return `${head}
-    <div class="card host">
-      ${rows}
-      <button class="btn green" data-act="showResults" ${left.length ? 'disabled' : ''}>Mostrar resultados a todos</button>
-      <button class="textbtn" data-act="backToTasting">Voltar à prova</button>
-    </div>`;
-  }
+  const m = majority();
+  const mine = S.reveals[S.guestId] || {};
+  const voters = k => Object.keys(S.reveals).filter(gid => (S.reveals[gid] || {})[k]).length;
+  const sameName = w => S.wines.some(o => o.id !== w.id && norm(o.name) === norm(w.name));
+  const label = w => esc(w.name) + (sameName(w) ? ' (' + esc(broughtBy(w)) + ')' : '');
 
   let rows = '';
   for (let k = 1; k <= total; k++) {
-    const w = inBottle(k);
-    rows += `<div class="lbl"><span class="tag-num">${k}</span>${w
-      ? `<span class="reveal"><b>${esc(w.name)}</b><br><span class="small">de ${esc(broughtBy(w))}</span></span>`
-      : '<span class="unknown">?</span>'}</div>`;
+    const pick = mine[k] || '';
+    const opts = S.wines.map(o => {
+      let at = 0; Object.keys(mine).forEach(b => { if (mine[b] === o.id && +b !== k) at = +b; });
+      return `<option value="${esc(o.id)}"${pick === o.id ? ' selected' : ''}>${label(o)}${at ? ' · disse que é a ' + at : ''}</option>`;
+    }).join('');
+    const win = m[k] && S.wines.find(w => w.id === m[k].wid);
+    rows += `<div class="reveal-row"><span class="tag-num">${k}</span><div class="rv">
+      <select data-reveal="${k}" aria-label="Que vinho estava na garrafa ${k}"><option value="">Que vinho é?</option>${opts}</select>
+      <span class="sub">${win ? `Maioria: <span class="majority">${label(win)}</span> (${plural(m[k].n, 'voto', 'votos')} de ${voters(k)})` : 'Ainda sem votos'}</span>
+    </div></div>`;
   }
-  return `${head}<div class="card">${rows}</div>`;
+  const left = bottlesWithoutMajority();
+  return `${topBar(me)}
+  <div class="stage"><div class="bigicon" aria-hidden="true">🎁</div><h1>A revelação</h1>
+    <p class="lead">Destapem as garrafas. Cada um diz que vinho estava em cada número; conta a maioria.</p></div>
+  <div class="card">${rows}</div>
+  ${S.isHost ? `<div class="card host">
+      <button class="btn green" style="margin-top:0" data-act="showResults" ${left.length ? 'disabled' : ''}>Mostrar resultados a todos</button>
+      <button class="textbtn" data-act="backToTasting">Voltar à prova</button></div>`
+    : '<div class="waiting">Os resultados aparecem quando o anfitrião terminar.</div>'}`;
 }
 
 /* --- results --- */
@@ -770,11 +1006,32 @@ function computeResults() {
   return rows;
 }
 
+function guessScore(gid) {
+  let right = 0, tried = 0;
+  const all = S.guesses[gid] || {};
+  S.wines.filter(w => w.number).forEach(w => {
+    const g = all[w.number] || {};
+    FIELDS.forEach(f => { const j = judge(f.k, g[f.k], w); if (j) { tried++; if (j.ok) right++; } });
+  });
+  return { right, tried };
+}
+
+function myGuessLines(w) {
+  const g = (S.guesses[S.guestId] || {})[w.number] || {};
+  const lines = FIELDS.map(f => {
+    const j = judge(f.k, g[f.k], w);
+    if (!j) return '';
+    return `<div class="nrow"><span>${f.label}: ${esc(g[f.k])}</span><span class="${j.ok ? 'ok' : 'bad'}">${j.ok ? '✓' : '✗'}${j.note ? ' ' + j.note : ''}</span></div>`;
+  }).join('');
+  return lines ? `<p class="small" style="margin-top:8px"><b>O seu palpite</b></p>${lines}` : '';
+}
+
 function resultsView(me) {
   const rows = computeResults();
   const winners = rows.filter(r => r.rank === 1);
   const medal = r => ({ 1: '🥇', 2: '🥈', 3: '🥉' }[r.rank] || '');
   const mine = myScores();
+  const guessers = S.guests.map(g => Object.assign({ g }, guessScore(g.id))).filter(x => x.tried).sort((a, b) => b.right - a.right);
 
   return `${topBar(me)}
   <h1 class="center">Resultados</h1>
@@ -788,26 +1045,38 @@ function resultsView(me) {
   </div>`).join('')}
   <div class="card">
     <h2>Classificação</h2>
-    <p class="small">Toque num vinho para ver as notas de todos.</p>
+    <p class="small">Toque num vinho para ver mais.</p>
     ${rows.map(r => `<details class="rank"><summary>
       <div class="rk${medal(r) ? ' medal' : ''}">${medal(r) || (r.rank || '–')}</div>
       <div class="info"><b>${esc(r.name)}</b>${owns(r, S.guestId) ? '<span class="mine-tag">seu</span>' : ''}
         <span class="sub">de ${esc(broughtBy(r))} · garrafa ${r.number}</span>
         ${mine[r.number] != null ? `<span class="sub">A sua nota: <b>${mine[r.number]}</b></span>` : ''}</div>
       <div class="av">${fmt(r.avg)}</div></summary>
-      ${S.guests.map(g => { const v = (S.ratings[g.id] || {})[r.number];
-        return `<div class="nrow"><span>${esc(g.name)}</span><b>${v == null ? '–' : v}</b></div>`; }).join('')}
+      <div class="more">
+        ${factsLine(r) ? `<div class="facts">${esc(factsLine(r))}</div>` : ''}
+        ${S.guests.map(g => { const v = (S.ratings[g.id] || {})[r.number];
+          return v == null ? '' : `<div class="nrow"><span>${esc(g.name)}</span><b>${v}</b></div>`; }).join('')}
+        ${myGuessLines(r)}
+      </div>
     </details>`).join('')}
   </div>
+  ${guessers.length ? `<div class="card"><h2>Palpites certos</h2>
+    ${guessers.map(x => `<div class="nrow"><span>${esc(x.g.name)}</span><b>${x.right} de ${x.tried}</b></div>`).join('')}</div>` : ''}
   ${S.isHost ? `<button class="textbtn" data-act="reopen">Corrigir a revelação</button>
-    <button class="textbtn" data-act="newTasting">Criar uma prova nova</button>` : ''}`;
+    <button class="textbtn" data-act="newTasting">${DEMO ? 'Recomeçar a demonstração' : 'Criar uma prova nova'}</button>` : ''}`;
 }
 
 function view() {
+  const ribbon = DEMO ? '<div class="ribbon">Demonstração · nada fica guardado</div>' : '';
+  return ribbon + screen();
+}
+
+function screen() {
   if (!fs) return '<p class="center lead" style="margin-top:40vh">Sem ligação. Verifique a internet e recarregue a página.</p>';
   if (!S.code) {
+    if (DEMO) return demoView();
     if (S.view === 'join') return joinView();
-    if (S.view === 'create') return createView();
+    if (S.view === 'create' && S.canCreate) return createView();
     if (S.view === 'hostLogin') return hostLoginView();
     return homeView();
   }
@@ -884,18 +1153,169 @@ $app.addEventListener('keydown', e => {
 });
 $app.addEventListener('change', e => {
   const t = e.target;
-  if (!t.dataset || !t.dataset.reveal) return;
-  assignBottle(parseInt(t.dataset.reveal, 10), t.value || null)
-    .then(() => render(true))
-    .catch(err => { console.error(err); toast('Não foi possível guardar. Verifique a internet.'); });
+  const fail = err => { console.error(err); toast('Não foi possível guardar. Verifique a internet.'); };
+  if (t.dataset && t.dataset.reveal) {
+    saveRevealVote(parseInt(t.dataset.reveal, 10), t.value || null).then(() => render(true)).catch(fail);
+  } else if (t.hasAttribute('data-guess')) {
+    const box = t.closest('[data-guess-for]');
+    if (box) saveGuess(parseInt(box.dataset.guessFor, 10)).catch(fail);
+  }
 });
 
+/* ---------- demo: everything lives in this phone's memory, with three virtual guests ---------- */
+function memoryDb(onChange) {
+  const store = new Map(), listeners = new Set();
+  const clone = o => o == null ? null : JSON.parse(JSON.stringify(o));
+  const merge = (a, b) => {
+    const r = Object.assign({}, a);
+    Object.keys(b).forEach(k => { r[k] = b[k] && typeof b[k] === 'object' && !Array.isArray(b[k]) && r[k] && typeof r[k] === 'object' ? merge(r[k], b[k]) : b[k]; });
+    return r;
+  };
+  const kids = p => Array.from(store.keys()).filter(k => k.indexOf(p + '/') === 0 && k.slice(p.length + 1).indexOf('/') < 0);
+  let queued = false;
+  const changed = () => {
+    if (queued) return; queued = true;
+    setTimeout(() => { queued = false; listeners.forEach(l => l()); if (onChange) onChange(); }, 0);
+  };
+  const apply = o => {
+    if (o.t === 'set') store.set(o.p, o.merge && store.has(o.p) ? merge(store.get(o.p), clone(o.d)) : clone(o.d));
+    else if (o.t === 'update') { if (!store.has(o.p)) throw new Error('not found: ' + o.p); store.set(o.p, Object.assign({}, store.get(o.p), clone(o.d))); }
+    else store.delete(o.p);
+  };
+  const write = ops => { try { ops.forEach(apply); } catch (e) { return Promise.reject(e); } changed(); return Promise.resolve(); };
+  const snap = p => ({ id: p.split('/').pop(), exists: store.has(p), data: () => clone(store.get(p)) });
+  const watch = (read, cb) => {
+    let last;
+    const l = () => { const s = JSON.stringify(read()); if (s !== last) { last = s; cb(); } };
+    listeners.add(l); setTimeout(l, 0);
+    return () => listeners.delete(l);
+  };
+  function doc(p) {
+    return {
+      id: p.split('/').pop(), path: p,
+      collection: n => col(p + '/' + n),
+      get: () => Promise.resolve(snap(p)),
+      set: (d, o) => write([{ t: 'set', p, d, merge: !!(o && o.merge) }]),
+      update: d => write([{ t: 'update', p, d }]),
+      delete: () => write([{ t: 'delete', p }]),
+      onSnapshot: cb => watch(() => store.get(p) || null, () => cb(snap(p)))
+    };
+  }
+  function col(p) {
+    const c = {
+      doc: id => doc(p + '/' + (id || Math.random().toString(36).slice(2, 12))),
+      add: d => { const r = c.doc(); return r.set(d).then(() => r); },
+      get: () => Promise.resolve({ docs: kids(p).map(snap) }),
+      onSnapshot: cb => watch(() => kids(p).map(k => [k, store.get(k)]), () => cb({ docs: kids(p).map(snap) }))
+    };
+    return c;
+  }
+  return {
+    collection: n => col(n),
+    batch() {
+      const ops = [];
+      return {
+        set(r, d, o) { ops.push({ t: 'set', p: r.path, d, merge: !!(o && o.merge) }); },
+        update(r, d) { ops.push({ t: 'update', p: r.path, d }); },
+        delete(r) { ops.push({ t: 'delete', p: r.path }); },
+        commit: () => write(ops)
+      };
+    }
+  };
+}
+
+const Demo = {
+  bots: [
+    { name: 'Ana', wine: { name: 'Douro Reserva', country: 'Portugal', region: 'Douro', year: '2019', abv: '14', grapes: 'Touriga Nacional, Touriga Franca' } },
+    { name: 'Rui', wine: { name: 'Alentejo Tinto', country: 'Portugal', region: 'Alentejo', year: '2021', abv: '14,5', grapes: 'Aragonez, Trincadeira, Alicante Bouschet' } },
+    { name: 'Teresa', wine: { name: 'Dão Colheita', country: 'Portugal', region: 'Dão', year: '2018', abv: '13,5', grapes: 'Touriga Nacional, Alfrocheiro' } }
+  ],
+  botIds: [], secret: null, voted: false, revealed: false,
+
+  async start(name) {
+    fs = memoryDb(() => Demo.tick());
+    Object.assign(Demo, { botIds: [], secret: null, voted: false, revealed: false });
+    const r = await newEvent('DEMO', name);
+    const ev = fs.collection('events').doc('DEMO');
+    for (let i = 0; i < Demo.bots.length; i++) {
+      const b = Demo.bots[i], g = ev.collection('guests').doc();
+      Demo.botIds.push(g.id);
+      await g.set({ name: b.name, joinedAt: Date.now() + i + 1 });
+      await ev.collection('wines').add(Object.assign({ guestId: g.id, guestIds: [g.id], number: null, createdAt: Date.now() + i + 1 }, b.wine));
+    }
+    enterEvent('DEMO', r.gid, r.pin);
+  },
+
+  // The virtual guests react to the phase: they score and guess once the tasting starts, and vote at the reveal.
+  async tick() {
+    if (!fs || !S.code) return;
+    const ev = fs.collection('events').doc('DEMO');
+    const s = await ev.get();
+    if (!s.exists) return;
+    const e = s.data();
+    if (e.phase === 'setup') { Demo.voted = false; Demo.revealed = false; Demo.secret = null; }
+    if (e.phase === 'tasting' && !Demo.voted) { Demo.voted = true; setTimeout(() => Demo.vote(e.total), 1500); }
+    if (e.phase === 'reveal' && !Demo.revealed) { Demo.revealed = true; setTimeout(() => Demo.reveal(e.total), 2000); }
+  },
+
+  async bottles(total) {
+    // The "real" numbering of the bottles, which only the virtual guests know.
+    if (!Demo.secret) {
+      const q = await fs.collection('events').doc('DEMO').collection('wines').get();
+      const wines = shuffle(q.docs.map(d => Object.assign({ id: d.id }, d.data()))).slice(0, total);
+      Demo.secret = {}; wines.forEach((w, i) => { Demo.secret[i + 1] = w; });
+    }
+    return Demo.secret;
+  },
+
+  async vote(total) {
+    const bottles = await Demo.bottles(total);
+    const pick = (real, list, p) => Math.random() < p ? real : list[Math.floor(Math.random() * list.length)];
+    for (const gid of Demo.botIds) {
+      const pool = shuffle([3, 4, 5, 6, 7, 8, 9, 10].flatMap(x => [x, x])).concat(shuffle([0, 1, 2, 0, 1, 2]));
+      const scores = {}, guesses = {};
+      for (let k = 1; k <= total; k++) {
+        scores[k] = pool[k - 1];
+        const w = bottles[k] || {};
+        guesses[k] = {
+          name: '', country: pick(w.country || 'Portugal', ['Portugal', 'Espanha', 'França'], 0.8),
+          region: pick(w.region || 'Douro', ['Douro', 'Alentejo', 'Dão', 'Bairrada', 'Lisboa'], 0.4),
+          year: String((parseInt(w.year, 10) || 2020) + (Math.random() < 0.4 ? 0 : 1)),
+          abv: w.abv || '13,5', grapes: pick(w.grapes || 'Touriga Nacional', ['Touriga Nacional', 'Baga', 'Castelão', 'Aragonez'], 0.5)
+        };
+      }
+      await fs.collection('events').doc('DEMO').collection('ratings').doc(gid).set({ scores, guesses }, { merge: true });
+    }
+  },
+
+  async reveal(total) {
+    const bottles = await Demo.bottles(total);
+    for (let i = 0; i < Demo.botIds.length; i++) {
+      const map = {};
+      for (let k = 1; k <= total; k++) map[k] = bottles[k] ? bottles[k].id : '';
+      if (i === 2 && total >= 2) { const t = map[1]; map[1] = map[2]; map[2] = t; } // Teresa mixes up two bottles; the majority fixes it
+      await fs.collection('events').doc('DEMO').collection('ratings').doc(Demo.botIds[i]).set({ reveal: map }, { merge: true });
+    }
+  }
+};
+
 /* ---------- start ---------- */
-(function init() {
+(async function init() {
+  if (DEMO) { fs = memoryDb(); S.view = 'demo'; render(true); return; }
   if (!window.firebase) { render(true); return; }
   firebase.initializeApp(firebaseConfig);
   fs = firebase.firestore();
-  const urlCode = (new URLSearchParams(location.search).get('e') || '').toUpperCase().replace(/[^A-Z]/g, '');
+
+  // Host link: remember on this phone that it may create tastings, then hide the secret from the address bar.
+  const key = PARAMS.get('anfitriao');
+  try {
+    if (key && await sha256(key) === HOST_HASH) { localStorage.setItem(HKEY, key); toast('Este telemóvel já pode criar provas.', 'ok'); }
+    const stored = localStorage.getItem(HKEY);
+    S.canCreate = !!stored && await sha256(stored) === HOST_HASH;
+  } catch (e) { S.canCreate = false; }
+  if (key) setUrl(null);
+
+  const urlCode = (PARAMS.get('e') || '').toUpperCase().replace(/[^A-Z]/g, '');
   const saved = loadSession();
   if (saved && saved.code && saved.guestId && (!urlCode || urlCode === saved.code)) {
     S.code = saved.code; S.guestId = saved.guestId; S.hostPin = saved.hostPin || null;
